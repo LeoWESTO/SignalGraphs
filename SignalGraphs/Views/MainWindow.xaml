@@ -1,0 +1,358 @@
+﻿<Window x:Class="SignalGraphs.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SignalGraphs"
+        mc:Ignorable="d"
+        Title="Визуализация Сигналов" 
+        Height="900" Width="1600"
+        WindowStartupLocation="CenterScreen"
+        FontSize="14">
+    <TabControl>
+        <TabItem Header="Входные данные">
+            <Grid>
+                <StackPanel Width="1280"
+                            Height="720"
+                            Background="LightGray">
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Выбрать файл .xlsx"
+                                Margin="10"
+                                HorizontalAlignment="Center"
+                                Click="OpenFile"
+                                Name="openFileBT"/>
+                        <TextBlock Name="pathTextBlock" Margin="10"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="10"
+                                   Text="Количество пар сигналов"/>
+                        <TextBox Name="pairCountTextBox"
+                                 Width="200"
+                                 VerticalAlignment="Center"
+                                 IsEnabled="False"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="10"
+                                   Text="Количество точек в каждой паре"/>
+                        <TextBox Name="pointsCountTextBox"
+                                 Width="200"
+                                 VerticalAlignment="Center"
+                                 IsEnabled="False"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Открыть"
+                                Margin="10"
+                                Click="LoadSignals"
+                                Name="openButton"
+                                IsEnabled="False"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="10"
+                                   Name="loadTB"/>
+                        <ProgressBar Width="200"
+                                     Maximum="1"
+                                     Minimum="0"
+                                     Margin="10"
+                                     Name="progressBar"/>
+                    </StackPanel>
+                </StackPanel>
+                <Canvas Name="LoadSplash"/>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Графики сырых" Name="rawDataTab" IsEnabled="False">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <!--Строка сверху-->
+                <StackPanel Grid.Row="0"
+                            Orientation="Horizontal"
+                            Margin="10">
+                    <Button Content="Вывести графики сырых"
+                            Click="DisplayRaw"/>
+                    <StackPanel Margin="20 0 0 0" Orientation="Horizontal">
+                        <TextBlock Text="Начальное время: "
+                                   VerticalAlignment="Center"/>
+                        <TextBox Width="200"
+                                 VerticalAlignment="Center"
+                                 Name="startTimeTextBox"
+                                 Text="0"/>
+                    </StackPanel>
+                    <StackPanel Margin="20 0 0 0" Orientation="Horizontal">
+                        <TextBlock Text="Номер пары: "
+                                   VerticalAlignment="Center"/>
+                        <TextBox Width="100"
+                                 VerticalAlignment="Center"
+                                 Name="pairNumberTextBox"
+                                 Text="1"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!--Графики-->
+                <ScrollViewer Grid.Row="1"
+                              HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Disabled">
+                    <StackPanel Orientation="Horizontal">
+                        <Border BorderThickness="1" BorderBrush="Gray">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <StackPanel Grid.Row="0">
+                                    <WpfPlot Name="PlotImportUP"
+                                             Width="500"
+                                             Height="350"/>
+                                    <StackPanel HorizontalAlignment="Center"
+                                        Orientation="Horizontal">
+                                        <TextBlock Text="Общее количество загруженных сигналов UP: "/>
+                                        <TextBox x:Name="UPloadTB"
+                                         Width="50"
+                                         IsReadOnly="True"/>
+                                    </StackPanel>
+                                    <StackPanel HorizontalAlignment="Center"
+                                        Orientation="Horizontal">
+                                        <TextBlock Text="Количество отбракованных сигналов UP: "/>
+                                        <TextBox x:Name="UPwrongTB"
+                                         Width="50"
+                                         IsReadOnly="True"/>
+                                    </StackPanel>
+                                    <StackPanel HorizontalAlignment="Center"
+                                        Orientation="Horizontal">
+                                        <TextBlock Text="Номера отбракованных сигналов UP: "/>
+                                        <TextBox x:Name="UPwrongNumbersTB"
+                                         Width="200"
+                                         IsReadOnly="True"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <StackPanel Grid.Row="1">
+                                    <WpfPlot Name="PlotImportDN"
+                                                 Width="500"
+                                                 Height="350"/>
+                                    <StackPanel HorizontalAlignment="Center"
+                                                Orientation="Horizontal">
+                                        <TextBlock Text="Общее количество загруженных сигналов DN: "/>
+                                        <TextBox x:Name="DNloadTB"
+                                                Width="50"
+                                                IsReadOnly="True"/>
+                                    </StackPanel>
+                                    <StackPanel HorizontalAlignment="Center"
+                                                Orientation="Horizontal">
+                                        <TextBlock Text="Количество отбракованных сигналов DN: "/>
+                                        <TextBox x:Name="DNwrongTB"
+                                                 Width="50"
+                                                 IsReadOnly="True"/>
+                                    </StackPanel>
+                                    <StackPanel HorizontalAlignment="Center"
+                                                Orientation="Horizontal"
+                                                Margin="10">
+                                        <TextBlock Text="Номера отбракованных сигналов DN: "/>
+                                        <TextBox x:Name="DNwrongNumbersTB"
+                                                 Width="200"
+                                                 IsReadOnly="True"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border BorderThickness="1" BorderBrush="Gray">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <StackPanel Grid.Row="0">
+                                    <WpfPlot Name="PlotBidirUP"
+                                                 Width="500"
+                                                 Height="350"/>
+                                    <StackPanel HorizontalAlignment="Center"
+                                            Orientation="Horizontal"
+                                            Margin="10">
+                                        <TextBlock Text="Величина сдвига UP: "/>
+                                        <TextBox x:Name="midline_raw_UPTB"
+                                             Width="50"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <StackPanel Grid.Row="1">
+                                    <WpfPlot Name="PlotBidirDN"
+                                                 Width="500"
+                                                 Height="350"/>
+                                    <StackPanel HorizontalAlignment="Center"
+                                        Orientation="Horizontal">
+                                        <TextBlock Text="Величина сдвига DN: "/>
+                                        <TextBox x:Name="midline_raw_DNTB"
+                                         Width="50"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border BorderThickness="1" BorderBrush="Gray">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <StackPanel Grid.Row="0">
+                                    <WpfPlot Name="PlotWinUP"
+                                                 Width="500"
+                                                 Height="350"/>
+                                    <StackPanel HorizontalAlignment="Center"
+                                                    Orientation="Horizontal">
+                                        <TextBlock Text="Максимум амплитуды UP: "/>
+                                        <TextBox x:Name="maxAmplUPTB"
+                                                     Width="100"
+                                                     IsReadOnly="True"/>
+                                    </StackPanel>
+                                    <StackPanel HorizontalAlignment="Center"
+                                                    Orientation="Horizontal">
+                                        <TextBlock Text="Время максимума амплитуды UP: "/>
+                                        <TextBox x:Name="maxAmplTimeUPTB"
+                                                     Width="100"
+                                                     IsReadOnly="True"/>
+                                    </StackPanel>
+                                    <StackPanel HorizontalAlignment="Center"
+                                                    Orientation="Horizontal">
+                                        <TextBlock Text="Минимум амплитуды UP: "/>
+                                        <TextBox x:Name="minAmplUPTB"
+                                                     Width="100"
+                                                     IsReadOnly="True"/>
+                                    </StackPanel>
+                                    <StackPanel HorizontalAlignment="Center"
+                                                    Orientation="Horizontal">
+                                        <TextBlock Text="Время минимума амплитуды UP: "/>
+                                        <TextBox x:Name="minAmplTimeUPTB"
+                                                     Width="100"
+                                                     IsReadOnly="True"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal"
+                                                HorizontalAlignment="Center">
+                                        <StackPanel HorizontalAlignment="Center"
+                                        Orientation="Horizontal">
+                                            <TextBlock Text="Окно влево: "/>
+                                            <TextBox x:Name="winLeftTB"
+                                         Width="100"/>
+                                        </StackPanel>
+                                        <StackPanel HorizontalAlignment="Center"
+                                        Orientation="Horizontal">
+                                            <TextBlock Text="Окно вправо: "/>
+                                            <TextBox x:Name="winRigthTB"
+                                         Width="100"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
+                                <StackPanel Grid.Row="1">
+                                    <WpfPlot Name="PlotWinDN"
+                                                 Width="500"
+                                                 Height="350"/>
+                                    <StackPanel HorizontalAlignment="Center"
+                                                    Orientation="Horizontal">
+                                        <TextBlock Text="Максимум амплитуды DN: "/>
+                                        <TextBox x:Name="maxAmplDNTB"
+                                                     Width="100"
+                                                     IsReadOnly="True"/>
+                                    </StackPanel>
+                                    <StackPanel HorizontalAlignment="Center"
+                                                    Orientation="Horizontal">
+                                        <TextBlock Text="Время максимума амплитуды DN: "/>
+                                        <TextBox x:Name="maxAmplTimeDNTB"
+                                                     Width="100"
+                                                     IsReadOnly="True"/>
+                                    </StackPanel>
+                                    <StackPanel HorizontalAlignment="Center"
+                                                    Orientation="Horizontal">
+                                        <TextBlock Text="Минимум амплитуды DN: "/>
+                                        <TextBox x:Name="minAmplDNTB"
+                                                     Width="100"
+                                                     IsReadOnly="True"/>
+                                    </StackPanel>
+                                    <StackPanel HorizontalAlignment="Center"
+                                                    Orientation="Horizontal">
+                                        <TextBlock Text="Время минимума амплитуды DN: "/>
+                                        <TextBox x:Name="minAmplTimeDNTB"
+                                                     Width="100"
+                                                     IsReadOnly="True"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border BorderThickness="1" BorderBrush="Gray">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <StackPanel Grid.Row="0">
+                                    <WpfPlot Name="PlotSumUP"
+                                                 Width="500"
+                                                 Height="350"/>
+                                    <StackPanel HorizontalAlignment="Center"
+                                        Orientation="Horizontal">
+                                        <TextBlock Text="Максимум суммарной амплитуды UP: "/>
+                                        <TextBox x:Name="maxAmplSumUPTB"
+                                             Width="100"
+                                             IsReadOnly="True"/>
+                                    </StackPanel>
+                                    <StackPanel HorizontalAlignment="Center"
+                                        Orientation="Horizontal">
+                                        <TextBlock Text="Время максимума суммарной амплитуды UP: "/>
+                                        <TextBox x:Name="maxAmplSumTimeUPTB"
+                                             Width="100"
+                                             IsReadOnly="True"/>
+                                    </StackPanel>
+                                    <StackPanel HorizontalAlignment="Center"
+                                        Orientation="Horizontal">
+                                        <TextBlock Text="Минимум суммарной амплитуды UP: "/>
+                                        <TextBox x:Name="minAmplSumUPTB"
+                                             Width="100"
+                                             IsReadOnly="True"/>
+                                    </StackPanel>
+                                    <StackPanel HorizontalAlignment="Center"
+                                        Orientation="Horizontal">
+                                        <TextBlock Text="Время минимума суммарной амплитуды UP: "/>
+                                        <TextBox x:Name="minAmplSumTimeUPTB"
+                                             Width="100"
+                                             IsReadOnly="True"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <StackPanel Grid.Row="1">
+                                    <WpfPlot Name="PlotSumDN"
+                                                 Width="500"
+                                                 Height="350"/>
+                                    <StackPanel HorizontalAlignment="Center"
+                                        Orientation="Horizontal">
+                                        <TextBlock Text="Максимум суммарной амплитуды DN: "/>
+                                        <TextBox x:Name="maxAmplSumDNTB"
+                                             Width="100"
+                                             IsReadOnly="True"/>
+                                    </StackPanel>
+                                    <StackPanel HorizontalAlignment="Center"
+                                        Orientation="Horizontal">
+                                        <TextBlock Text="Время максимума суммарной амплитуды DN: "/>
+                                        <TextBox x:Name="maxAmplSumTimeDNTB"
+                                             Width="100"
+                                             IsReadOnly="True"/>
+                                    </StackPanel>
+                                    <StackPanel HorizontalAlignment="Center"
+                                        Orientation="Horizontal">
+                                        <TextBlock Text="Минимум суммарной амплитуды DN: "/>
+                                        <TextBox x:Name="minAmplSumDNTB"
+                                             Width="100"
+                                             IsReadOnly="True"/>
+                                    </StackPanel>
+                                    <StackPanel HorizontalAlignment="Center"
+                                        Orientation="Horizontal">
+                                        <TextBlock Text="Время минимума суммарной амплитуды DN: "/>
+                                        <TextBox x:Name="minAmplSumTimeDNTB"
+                                             Width="100"
+                                             IsReadOnly="True"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </TabItem>
+    </TabControl>
+</Window>
